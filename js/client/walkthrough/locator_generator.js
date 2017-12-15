@@ -38,6 +38,10 @@ class LocatorGenerator {
 					continue;
 				}
 
+				if (element.frameId !== undefined) {
+					locator = "frame=id=" + element.frameId + " " + locator;
+				}
+
 				if (LocatorGenerator.isLocatorUnique(locator)) {
 					return locator;
 				}

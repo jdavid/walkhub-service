@@ -253,15 +253,27 @@ class EventAbsorber {
 
 	getElementAtEvent(event) {
 		var pos = this.getPositionFromEvent(event, true);
+		var x = pos.x;
+		var y = pos.y;
 
 		this.mouseEventAbsorber
-			.css("top", pos.y + "px")
-			.css("left", pos.x + "px")
+			.css("top", y + "px")
+			.css("left", x + "px")
 			.css("width", "1px")
 			.css("height", "1px")
 			.css("position", "absolute");
 
-		var element =  $(window.document.elementFromPoint(pos.x, pos.y - 1));
+		var element = window.document.elementFromPoint(x, y - 1);
+		if (element instanceof HTMLIFrameElement) {
+			var frame = element;
+			x = x - frame.offsetLeft;
+			y = y - frame.offsetTop;
+			element = frame.contentWindow.document.elementFromPoint(x, y - 1);
+			element = $(element);
+			element.frameId = frame.id;
+		} else {
+			element = $(element);
+		}
 
 		this.resetOverlay();
 

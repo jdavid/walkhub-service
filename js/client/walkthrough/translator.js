@@ -25,7 +25,7 @@ class Translator {
 		this.tries = 0;
 	}
 
-	translate(locator) {
+	translate(locator, context) {
 		if (!locator) {
 			return null;
 		}
@@ -34,13 +34,13 @@ class Translator {
 
 		for (var prefix in this.locators) {
 			if (this.locators.hasOwnProperty(prefix) && locator.indexOf(prefix + "=") === 0) {
-				jqobj = this.locators[prefix](locator.substr(prefix.length + 1));
+				jqobj = this.locators[prefix](locator.substr(prefix.length + 1), context);
 				break;
 			}
 		}
 
 		if (!jqobj && !!this.defaultLocator && !!this.locators[this.defaultLocator]) {
-			jqobj = this.locators[this.defaultLocator](locator);
+			jqobj = this.locators[this.defaultLocator](locator, context);
 		}
 
 		return jqobj;
@@ -102,63 +102,76 @@ class Translator {
 		if (!Translator.instanceObject) {
 			Translator.instanceObject = new Translator();
 
-			var id = function (arg) {
-				return $("#" + arg);
+			var frame = function (arg, context) {
+				var end = arg.indexOf(" ");
+				var locator1 = arg.substr(0, end);
+				var locator2 = arg.substr(end +	1);
+				var frame = Translator.instanceObject.translate(locator1, context);
+				return Translator.instanceObject.translate(locator2, frame[0].contentWindow.document);
 			};
 
-			var name = function (arg) {
-				return $("[name=" + arg + "]");
+			var id = function (arg, context) {
+				return $("#" + arg, context);
 			};
 
-			var xpath = function (arg) {
+			var name = function (arg, context) {
+				return $("[name=" + arg + "]", context);
+			};
+
+			var xpath = function (arg, context) {
+				if (context === undefined) {
+					context = window.document;
+				}
+
 				var result = null;
 				try {
-					result = window.document.evaluate(arg, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+					result = context.evaluate(arg, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 				} catch (ex) {}
 				if (result !== null && result.snapshotLength > 0) {
-					return $(result.snapshotItem(0));
+					return $(result.snapshotItem(0), context);
 				}
 				return $(""); // empty jquery object
 			};
 
-			var css = function (arg) {
-				return $(arg);
+			var css = function (arg, context) {
+				return $(arg, context);
 			};
 
 			Translator.instanceObject
-				.addLocatorTranslator("identifier", function (arg) {
-					var jq = id(arg);
+				.addLocatorTranslator("frame", frame)
+				.addLocatorTranslator("identifier", function (arg, context) {
+					var jq = id(arg, context);
 					if (jq.length === 0) {
-						jq = name(arg);
+						jq = name(arg, context);
 					}
 					return jq;
 				})
 				.addLocatorTranslator("id", id)
 				.addLocatorTranslator("name", name)
-				.addLocatorTranslator("dom", function (arg) {
+				.addLocatorTranslator("dom", function (arg, context) {
 					return null;
 				})
 				.addLocatorTranslator("xpath", xpath)
-				.addLocatorTranslator("link", function (arg) {
-					return $("a").filter(function () {
+				.addLocatorTranslator("link", function (arg, context) {
+					return $("a", context).filter(function () {
 						return $(this).text() === arg;
 					});
 				})
 				.addLocatorTranslator("css", css)
-				.addLocatorTranslator("ui", function (arg) {
+				.addLocatorTranslator("ui", function (arg, context) {
 					return null;
 				})
-				.addLocatorTranslator("default", function (arg) {
+				.addLocatorTranslator("default", function (arg, context) {
 					var item = null;
 					try {
-						item = xpath(arg);
+						item = xpath(arg, context);
 						// Intentional empty catch here.
 						// If there's something wrong with the xpath,
 						// then it's probably an older selenium test,
 						// and it's not an xpath but a css selector.
 					} catch (ex) {}
 					if (item === null || item.length === 0) {
-						item = css(arg);
+						item = css(arg, context);
 					}
 
 					return item;
