@@ -124,7 +124,7 @@ class Bubble {
 			this.description.text(this.step.description);
 		}
 
-    this.closeButton = $("<a />")
+		this.closeButton = $("<a />")
 			.attr("title", t("Close"))
 			.addClass("wtbubble-close")
 			.click(function (event) {
@@ -370,22 +370,30 @@ class Bubble {
 
 		// @TODO check if modal
 
+		var x = offset.left;
+		var y = offset.top;
+		if (element.frame !== undefined) {
+			var frameOffset = element.frame.offset();
+			x = x + frameOffset.left;
+			y = y + frameOffset.top;
+		}
+
 		switch (orientation) {
 			case "top":
-				pos.y = offset.top - tipHeight - nubHeight;
-				pos.x = offset.left - nubLeft;
+				pos.y = y - tipHeight - nubHeight;
+				pos.x = x - nubLeft;
 				break;
 			case "bottom":
-				pos.y = offset.top + elementHeight + nubHeight;
-				pos.x = offset.left - nubLeft;
+				pos.y = y + elementHeight + nubHeight;
+				pos.x = x - nubLeft;
 				break;
 			case "left":
-				pos.y = offset.top - (tipHeight/2 - elementHeight/2);
-				pos.x = offset.left - tipWidth - nubWidth;
+				pos.y = y - (tipHeight/2 - elementHeight/2);
+				pos.x = x - tipWidth - nubWidth;
 				break;
 			case "right":
-				pos.y = offset.top - (tipHeight/2 - elementHeight/2);
-				pos.x = elementWidth + offset.left + nubWidth;
+				pos.y = y - (tipHeight/2 - elementHeight/2);
+				pos.x = elementWidth + x + nubWidth;
 				break;
 		}
 

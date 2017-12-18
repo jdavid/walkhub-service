@@ -107,7 +107,9 @@ class Translator {
 				var locator1 = arg.substr(0, end);
 				var locator2 = arg.substr(end +	1);
 				var frame = Translator.instanceObject.translate(locator1, context);
-				return Translator.instanceObject.translate(locator2, frame[0].contentWindow.document);
+				var element = Translator.instanceObject.translate(locator2, frame[0].contentWindow.document);
+				element.frame = frame;
+				return element;
 			};
 
 			var id = function (arg, context) {
