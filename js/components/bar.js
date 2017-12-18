@@ -50,6 +50,11 @@ class Bar extends React.Component {
 						<ul className="nav navbar-nav navbar-right">
 							{btn}
 							{this.props.children}
+							<li>
+								<a href="#" onClick={this.props.onClose} className="btn btn-close" ariaLabel={t("Close")}>
+									<strong><span className="glyphicon glyphicon-remove" ariaHidden="true"></span></strong>
+								</a>
+							</li>
 						</ul>
 					</div>
 				</nav>
