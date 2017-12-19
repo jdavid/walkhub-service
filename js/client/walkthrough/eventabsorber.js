@@ -156,6 +156,10 @@ class EventAbsorber {
 				that.handleHovering(event);
 				that.refreshHover(event);
 			});
+
+		$("iframe").contents().find("head").append(
+			$("<style type='text/css'> .walkthrough-eventabsorber-hover { border: 1px solid red; } </style>")
+		);
 	}
 
 	resetOverlay() {
@@ -194,6 +198,8 @@ class EventAbsorber {
 
 	removeHover() {
 		$(".walkthrough-eventabsorber-hover")
+			.removeClass("walkthrough-eventabsorber-hover");
+		$("iframe").contents().find(".walkthrough-eventabsorber-hover")
 			.removeClass("walkthrough-eventabsorber-hover");
 	}
 
