@@ -62,6 +62,7 @@ If unsure, leave them empty.
 * `mailchimp`: mailchimp-related configuration. If set, new users will be added to a mailing list.
 * `metricsaddresses`: comma separated whitelist of addresses from where the `/metrics` endpoint is accessible
 * `languages`: list of languages for the user interface
+* `domain`: the document domain (see Same-origin policy)
 
 ## Build & Run
 

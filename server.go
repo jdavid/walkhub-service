@@ -263,19 +263,24 @@ func corsMiddleware(baseURL, httpOrigin string) func(http.Handler) http.Handler 
 }
 
 var indexTemplate = htemplate.Must(htemplate.ParseFiles("assets/index.html"))
+var domain = ""
 
 type pageData struct {
 	CSRFToken string
+	Domain string
 }
 
 func handleIndex(w http.ResponseWriter, r *http.Request) {
 	token := ab.GetCSRFToken(r)
 	ab.Render(r).HTML(indexTemplate, pageData{
 		CSRFToken: token,
+		Domain: domain,
 	})
 }
 
 func (s *WalkhubServer) Start(addr string, certfile string, keyfile string) error {
+	domain = s.cfg.GetString("domain")
+
 	frontendPaths := []string{
 		"/",
 		"/connect",

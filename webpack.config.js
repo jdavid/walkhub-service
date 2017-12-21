@@ -22,6 +22,7 @@ var gaAccount = process.env.GOOGLEANALYTICSACCOUNT || serverConfig.googleanalyti
 var extraBuild = process.env.EXTRABUILD || serverConfig.extrabuild;
 var disableRegistration = process.env.DISABLEREGISTRATION || serverConfig.disableregistration;
 var languages = process.env.LANGUAGES || serverConfig.languages;
+var domain = process.env.DOMAIN || serverConfig.domain;
 
 var isProd = process.env.NODE_ENV === "production";
 
@@ -143,6 +144,7 @@ module.exports = {
 			WALKHUB_ANNOUNCEMENT: !!announcementcomponent,
 			DISABLE_REGISTRATION: !!disableRegistration,
 			LANGUAGES: JSON.stringify(languages),
+			DOMAIN: JSON.stringify(domain),
 		}),
 		new webpack.NoErrorsPlugin(),
 		new webpack.optimize.OccurenceOrderPlugin(),
